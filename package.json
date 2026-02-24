@@ -1,0 +1,21 @@
+{
+  "name": "wolne-tts-mastra",
+  "version": "1.0.0",
+  "description": "Polish TTS from Wolne Lektury books via Mastra + Vast.ai XTTS-v2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "mastra dev",
+    "build": "mastra build",
+    "start": "mastra start"
+  },
+  "dependencies": {
+    "@mastra/core": "latest",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "mastra": "latest",
+    "typescript": "^5.7.0"
+  }
+}
