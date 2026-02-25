@@ -28,7 +28,7 @@ export const listNarratorsTool = createTool({
     ),
     total: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const res = await fetch(
       `${TRAINING_URL}/narrators?min_books=${inputData.minBooks}`
     );
@@ -64,7 +64,7 @@ export const trainNarratorTool = createTool({
     narrator: z.string(),
     status: z.string(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const res = await fetch(`${TRAINING_URL}/jobs/train-narrator`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -109,7 +109,7 @@ export const trainAllNarratorsTool = createTool({
     jobs: z.array(z.object({ job_id: z.string(), narrator: z.string() })),
     total: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const res = await fetch(`${TRAINING_URL}/jobs/train-all`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -151,7 +151,7 @@ export const trainingStatusTool = createTool({
     training_epochs_total: z.number(),
     model_path: z.string().nullable(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const res = await fetch(`${TRAINING_URL}/jobs/${inputData.jobId}`);
     if (!res.ok) throw new Error(`Status check failed: ${await res.text()}`);
     return (await res.json()) as {

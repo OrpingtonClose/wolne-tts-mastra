@@ -22,7 +22,7 @@ export const wolneLekturyTool = createTool({
     textLength: z.number(),
     bookUrl: z.string(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const { slug } = inputData;
 
     const metaRes = await fetch(

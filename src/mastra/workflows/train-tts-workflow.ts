@@ -24,7 +24,7 @@ const fetchNarratorsStep = createStep({
     total: z.number(),
     minBooks: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const res = await fetch(
       `${TRAINING_URL}/narrators?min_books=${inputData.minBooks}`
     );
@@ -66,7 +66,7 @@ const queueTrainingStep = createStep({
     totalQueued: z.number(),
     totalSkipped: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     // Filter out narrators that already have a trained model
     const toTrain = inputData.narrators.filter((n) => !n.has_model);
     const skipped = inputData.narrators

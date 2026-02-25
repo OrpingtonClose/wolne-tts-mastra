@@ -33,7 +33,7 @@ export const vastaiProvisionTool = createTool({
     gpuName: z.string(),
     pricePerHour: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const { minVram, maxPrice, diskGb } = inputData;
 
     // 1. Check for existing running instances tagged for our use
@@ -153,7 +153,7 @@ export const vastaiStatusTool = createTool({
     gpuName: z.string(),
     uptimeHours: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const info = await getInstanceInfo(inputData.instanceId);
     if (!info) throw new Error(`Instance ${inputData.instanceId} not found`);
     return {
@@ -180,7 +180,7 @@ export const vastaiDestroyTool = createTool({
     success: z.boolean(),
     instanceId: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const res = await fetch(
       `${VAST_API_BASE}/instances/${inputData.instanceId}/`,
       {

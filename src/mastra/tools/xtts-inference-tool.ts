@@ -25,7 +25,7 @@ export const xttsInferenceTool = createTool({
     totalChars: z.number(),
     totalDurationSec: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const { serverUrl, text, language, speed } = inputData;
 
     // 1. Check server health

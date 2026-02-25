@@ -6,4 +6,8 @@ import { trainTtsWorkflow } from "./workflows/train-tts-workflow";
 export const mastra = new Mastra({
   agents: { polishTtsAgent },
   workflows: { bookTtsWorkflow, trainTtsWorkflow },
+  server: {
+    host: "0.0.0.0",
+    port: 4111,
+  },
 });

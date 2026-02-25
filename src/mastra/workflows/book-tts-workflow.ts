@@ -17,7 +17,7 @@ const fetchBookStep = createStep({
     text: z.string(),
     textLength: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const { bookSlug } = inputData;
 
     const metaRes = await fetch(
@@ -76,7 +76,7 @@ const generateTtsStep = createStep({
     totalChars: z.number(),
     totalDurationSec: z.number(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async (inputData) => {
     const { text, title, author } = inputData;
     const CHUNK_SIZE = 400;
 
