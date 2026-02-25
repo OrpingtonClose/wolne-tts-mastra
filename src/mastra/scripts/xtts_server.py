@@ -181,6 +181,80 @@ async def upload_reference(audio_base64: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class ReloadRequest(BaseModel):
+    model_path: str = ""  # Empty = reload base model
+
+
+@app.post("/unload")
+async def unload_model():
+    """Unload model from GPU to free VRAM for training."""
+    global model, config, gpt_cond_latent, speaker_embedding
+
+    if model is not None:
+        model.cpu()
+        del model
+        model = None
+        config = None
+        gpt_cond_latent = None
+        speaker_embedding = None
+        torch.cuda.empty_cache()
+        logger.info("Model unloaded from GPU")
+        return {"status": "unloaded"}
+    return {"status": "already_unloaded"}
+
+
+@app.post("/reload")
+async def reload_model(req: ReloadRequest):
+    """Reload model (base or fine-tuned) onto GPU."""
+    global model, config, gpt_cond_latent, speaker_embedding, MODEL_PATH
+
+    # Unload current model first
+    if model is not None:
+        model.cpu()
+        del model
+        model = None
+        torch.cuda.empty_cache()
+
+    new_model_path = req.model_path.strip()
+    MODEL_PATH = new_model_path
+
+    try:
+        if new_model_path and Path(new_model_path).exists():
+            logger.info(f"Loading fine-tuned model from {new_model_path}")
+            config = XttsConfig()
+            config.load_json(str(Path(new_model_path) / "config.json"))
+            model = Xtts.init_from_config(config)
+            model.load_checkpoint(
+                config,
+                checkpoint_dir=new_model_path,
+                use_deepspeed=False,
+            )
+        else:
+            logger.info("Loading base XTTS-v2 model from TTS library...")
+            from TTS.api import TTS as TTSApi
+            tts_api = TTSApi("tts_models/multilingual/multi-dataset/xtts_v2")
+            model = tts_api.synthesizer.tts_model
+            config = tts_api.synthesizer.tts_config
+
+        model.cuda()
+        model.eval()
+
+        # Recompute speaker embedding
+        if Path(REF_AUDIO_PATH).exists():
+            gpt_cond_latent, speaker_embedding = model.get_conditioning_latents(
+                audio_path=[REF_AUDIO_PATH],
+                gpt_cond_len=30,
+                gpt_cond_chunk_len=4,
+                max_ref_length=60,
+            )
+
+        logger.info(f"Model reloaded: {new_model_path or 'base'}")
+        return {"status": "reloaded", "model_path": new_model_path or "base"}
+    except Exception as e:
+        logger.error(f"Reload failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 if __name__ == "__main__":
     import uvicorn
 
